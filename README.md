@@ -22,8 +22,7 @@ Because the official SQLite APT distro is always years old.
 
 ## To Do
 
-* **[–]** Avoid duplication of this [`build-sqlite3`]
-    (https://github.com/loveencounterflow/sqlite3-customized/blob/main/build-sqlite3)
+* **[–]** Avoid duplication of this [`build-sqlite3`](https://github.com/loveencounterflow/sqlite3-customized/blob/main/build-sqlite3)
     and [the same used in `dbay`](https://github.com/loveencounterflow/dbay/blob/main/build-sqlite3)
 
 ## Is Done
