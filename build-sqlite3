@@ -76,9 +76,24 @@ echo "$CFLAGS"
 # npm install better-sqlite3@'^7.4.3' --no-save --build-from-source --sqlite3="$(pwd)/sqlite-snapshot-202107191400"
 
 # git clone https://github.com/sqlite/sqlite
-( cd sqlite && git pull && git reset --hard version-3.38.5 )
+# ( cd sqlite && git pull && git reset --hard version-3.38.5 )
 
-( mkdir -p build && cd build && ../sqlite/configure )
+update_existing_sqlite() {
+  git fetch origin
+  git checkout master
+  git reset --hard origin/master; }
+
+get_most_recent_tag() {
+  git log --date-order --tags --simplify-by-decoration --pretty="format:%ai %d" \
+    | grep -Pi 'version-' \
+    | head -n 1 \
+    | sed -E 's/^.*(version-[0-9.]+).*$/\1/'; }
+
+cd sqlite
+update_existing_sqlite
+get_most_recent_tag
+
+# ( mkdir -p build && cd build && ../sqlite/configure )
 # make
 
 
