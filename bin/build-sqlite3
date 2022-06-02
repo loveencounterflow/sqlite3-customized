@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # set -euo pipefail
+
+#-----------------------------------------------------------------------------------------------------------
 realpath() {
   # thx to https://github.com/whatwg/html-build/issues/90
   OURPWD=$PWD
@@ -15,9 +17,17 @@ realpath() {
 }
 # realpath "$@"
 
-home="$(realpath "$(realpath "${BASH_SOURCE[0]}" | xargs dirname)"/.)"
-echo "home is $home"
-# cd "$home"
+#-----------------------------------------------------------------------------------------------------------
+enodir() {
+  # path="$1"
+  # echo "no such directory: $path"
+  exit 1; }
+
+#-----------------------------------------------------------------------------------------------------------
+home="$(realpath "$(realpath "${BASH_SOURCE[0]}" | xargs dirname)"/..)"
+cd "$home" || enodir
+echo "home is $(pwd)"
+
 
 
 # Below lines copied and adjusted from https://github.com/JoshuaWise/better-sqlite3, filee
@@ -70,8 +80,8 @@ SQLITE_MAX_ATTACHED=125
 
 CFLAGS=`echo $(echo "$DEFINES" | sed -e "/^\s*$/d" -e "s/^/-D/")`
 export CFLAGS
+# echo "$CFLAGS"
 
-echo "$CFLAGS"
 
 # npm install better-sqlite3@'^7.5.1' --production --no-save --build-from-source --sqlite3="$home/sqlite-amalgamation-3380200"
 # npm install better-sqlite3@'^7.4.3' --no-save --build-from-source --sqlite3="$(pwd)/sqlite-snapshot-202107191400"
@@ -79,20 +89,30 @@ echo "$CFLAGS"
 # git clone https://github.com/sqlite/sqlite
 # ( cd sqlite && git pull && git reset --hard version-3.38.5 )
 
+#-----------------------------------------------------------------------------------------------------------
 update_existing_sqlite() {
   git fetch origin
   git checkout master
   git reset --hard origin/master; }
 
+#-----------------------------------------------------------------------------------------------------------
 get_most_recent_tag() {
   git log --date-order --tags --simplify-by-decoration --pretty="format:%ai %d" \
     | grep -Pi 'version-' \
     | head -n 1 \
     | sed -E 's/^.*(version-[0-9.]+).*$/\1/'; }
 
-cd sqlite
+
+#-----------------------------------------------------------------------------------------------------------
+source bin/_trm || enodir
+
+#-----------------------------------------------------------------------------------------------------------
+cd sqlite || enodir
 update_existing_sqlite
-get_most_recent_tag
+mrtag=$(get_most_recent_tag)
+echo -e "$lime""Most recent SQLite3 tag is $mrtag""$reset"
+git reset --hard "$mrtag"
+
 
 # ( mkdir -p build && cd build && ../sqlite/configure )
 # make
