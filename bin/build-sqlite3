@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# set -euo pipefail
 realpath() {
   # thx to https://github.com/whatwg/html-build/issues/90
   OURPWD=$PWD
